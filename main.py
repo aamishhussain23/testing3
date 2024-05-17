@@ -1,59 +1,65 @@
-# from fastapi import FastAPI, HTTPException
-# from fastapi.middleware.cors import CORSMiddleware
+# from fastapi import FastAPI, Request
 # from pydantic import BaseModel
-# import requests
+# from datetime import datetime
 
 # app = FastAPI()
 
-# # Set all CORS enabled origins
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["*"],
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
-
-# class Payload(BaseModel):
+# class TokenData(BaseModel):
 #     token: str
 #     time: str
 
-# @app.post("/new-endpoint")
-# async def new_endpoint(payload: Payload):
-#     SPREADSHEET_ID = "1A8Mpe-dStdBKjc7DIc4WQSWRm-YK2KFB4o7qGVFBcY8"
-#     RANGE_NAME = "Sheet1"
-    
-#     url = f"https://sheets.googleapis.com/v4/spreadsheets/{SPREADSHEET_ID}/values/{RANGE_NAME}:append?valueInputOption=USER_ENTERED"
+# @app.post("/receive-token")
+# async def receive_token(data: TokenData):
+#     # Extract and log the token and time for debugging
+#     print(f"Received token: {data.token}")
+#     print(f"Received time: {data.time}")
 
-#     headers = {
-#         'Authorization': f'Bearer {payload.token}',
-#         'Accept': 'application/json',
-#         'Content-Type': 'application/json'
+#     # Generate a row of dummy data
+#     row_data = {
+#         "Order Code": 123456789,
+#         "Ticker": "EURINR24AUGFUT",
+#         "Sale Date": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+#         "Customer Name": "John Doe",
+#         "Gender": "-Male-",
+#         "City": "New York",
+#         "Order Amount": 1234
 #     }
 
-#     # Replace with actual data structure as per your requirement
-#     values = [
-#         ["4845158455", "AAMISH123", "04/08/2024 00:00:00", "Aamish", "-Male-", "Bihar", "8888"]
-#     ]
+#     # Return the row data as JSON
+#     return row_data
 
-#     body = {
-#         'values': values
-#     }
-
-#     response = requests.post(url, headers=headers, json=body)
-
-#     if response.status_code == 200:
-#         return {"status": "success"}
-#     else:
-#         raise HTTPException(status_code=400, detail="Failed to update the spreadsheet")
+# if __name__ == "__main__":
+#     import uvicorn
+#     uvicorn.run(app, host="0.0.0.0", port=8000)
 
 
 from fastapi import FastAPI
-from typing import Dict
+from pydantic import BaseModel
+from datetime import datetime
 
 app = FastAPI()
 
-@app.post("/items/")
-async def create_item(item: Dict[str, str]):
-    # process the item here
-    return {"item": item}
+class TokenData(BaseModel):
+    token: str
+    time: str
+
+@app.post("/receive-token")
+async def receive_token(data: TokenData):
+    print(f"Received token: {data.token}")
+    print(f"Received time: {data.time}")
+
+    row_data = {
+        "Order Code": 123456789,
+        "Ticker": "EURINR24AUGFUT",
+        "Sale Date": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+        "Customer Name": "John Doe",
+        "Gender": "-Male-",
+        "City": "New York",
+        "Order Amount": 1234
+    }
+
+    return row_data
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
