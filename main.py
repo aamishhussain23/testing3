@@ -49,26 +49,11 @@
 
 
 from fastapi import FastAPI
-from pydantic import BaseModel
-from fastapi.middleware.cors import CORSMiddleware
+from typing import Dict
 
 app = FastAPI()
 
-# # Set all CORS enabled origins
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-class Item(BaseModel):
-    name: str
-    description: str
-    price: float
-
 @app.post("/items/")
-async def create_item(item: Item):
+async def create_item(item: Dict[str, str]):
     # process the item here
     return {"item": item}
